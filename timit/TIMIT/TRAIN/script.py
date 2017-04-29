@@ -9,19 +9,19 @@ wav_files = glob.glob('*/*/*.WAV')
 
 # x_,y_ = librosa.load('DR1/FCJF0/SX37.WAV', sr=16000)
 
-win_size = 256
-hop_size = 128
+win_size = 512
+hop_size = 256
 
 mfcc_map = {}
-for filename in wav_files[:10]:
+for filename in wav_files[:200]:
     x,y = librosa.load(filename, sr=16000)
     mfcc = librosa.feature.mfcc(y=x, sr=16000, n_mfcc=13, n_fft=win_size, hop_length = hop_size)
     blah = filename.split('/' )
-    mfcc_map[blah[-1][0:-4]] = mfcc
+    mfcc_map[blah[-3] + blah[-2] + blah[-1][0:-4]] = mfcc
 
 phn_map = {}
 
-for filename in phn_files[:10]:
+for filename in phn_files[:200]:
     with open(filename, 'r') as f:
         fcon = f.read()
         lines = fcon.split('\n')
@@ -29,7 +29,7 @@ for filename in phn_files[:10]:
         for l in lines:
             col.append(l.split(' '))
     blah = filename.split('/' )
-    phn_map[blah[-1][0:-4]] = col
+    phn_map[blah[-3] + blah[-2] + blah[-1][0:-4]] = col
 
 df_phn = pd.DataFrame(columns = ('File', 'Phoneme'))
 x = []
@@ -54,5 +54,4 @@ for key, val in phn_map.iteritems():
                 break
         i += hop_size
 
-# print len(x)
-# print len(df_phn)
+df_phn.to_csv('phn_train.csv')
