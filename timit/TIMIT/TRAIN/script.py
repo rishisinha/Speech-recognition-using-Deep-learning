@@ -54,4 +54,14 @@ for key, val in phn_map.iteritems():
                 break
         i += hop_size
 
+df_mfcc = pd.DataFrame(columns = ('File', 'MFCC 1', 'MFCC 2', 'MFCC 3', 'MFCC 4', 'MFCC 5', 'MFCC 6', 'MFCC 7', 'MFCC 8', 'MFCC 9', 'MFCC 10', 'MFCC 11', 'MFCC 12', 'MFCC 13'))
+
+w = 0
+
+for key, val in mfcc_map.iteritems():
+    for k in range(val.shape[1]-1):
+        df_mfcc.loc[w] = [key, val[0,k], val[1,k], val[2,k], val[3,k], val[4,k], val[5,k], val[6,k], val[7,k], val[8,k], val[9,k], val[10,k], val[11,k], val[12,k]]
+        w += 1
+
+df_mfcc.to_csv('mfcc_train.csv')
 df_phn.to_csv('phn_train.csv')
