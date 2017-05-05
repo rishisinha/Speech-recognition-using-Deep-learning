@@ -9,8 +9,9 @@ c = pd.read_csv('phn_target.csv')
 mfcc_normalise = pd.DataFrame(columns = ('MFCC 1', 'MFCC 2', 'MFCC 3', 'MFCC 4', 'MFCC 5', 'MFCC 6', 'MFCC 7', 'MFCC 8', 'MFCC 9', 'MFCC 10', 'MFCC 11', 'MFCC 12', 'MFCC 13'))
 
 for i in range(len(b)):
-    b.ix[i,2:15] = b.ix[i,2:15] - min(b.ix[i,2:15])
-    b.ix[i,2:15] = b.ix[i,2:15]/(b.ix[i,2:15]).sum()
+    #b.ix[i,2:15] = b.ix[i,2:15] - min(b.ix[i,2:15])
+    #b.ix[i,2:15] = b.ix[i,2:15]/(b.ix[i,2:15]).sum()
+    b.ix[i,2:15] = (b.ix[i,2:15] - b.ix[i,2:15].mean())/b.ix[i,2:15].std()
 
 mfcc_normalise = b.ix[:,1:15]
 
