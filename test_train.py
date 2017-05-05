@@ -13,13 +13,13 @@ num_input = inputs.shape[0]
 input_size = inputs.shape[1]
 num_classes = labels.shape[1]
 
-#print input_size
+#print inputs[0]
 
 #num_layers = 2
-num_epoch = 50
-num_steps = 5
-num_hidden = 256
-batch_size = 5
+num_epoch = 100
+num_steps = 30
+num_hidden = 128
+batch_size = 30
 learning_rate = 0.001
 display_step = 5
 
@@ -31,15 +31,16 @@ weights = {
 }
 
 biases = {
-	'out': tf.Variable(tf.random_normal([num_classes]))
+	#'out': tf.Variable(tf.random_normal([num_classes]))
+	'out': tf.Variable(tf.constant(0., shape=[num_classes]))
 }
 
 def BiRNN(x, weights, biases):
 	# reshape input to a list of nsteps tnsors of shape (batch_size, num_input) 
 	x = tf.unstack(x, num_steps, 1)
 
-	lstm_fw_cell = rnn.BasicLSTMCell(num_hidden, forget_bias = 1.0)
-	lstm_bw_cell = rnn.BasicLSTMCell(num_hidden, forget_bias = 1.0)
+	lstm_fw_cell = rnn.BasicLSTMCell(num_hidden, forget_bias = 0.9)
+	lstm_bw_cell = rnn.BasicLSTMCell(num_hidden, forget_bias = 0.9)
 
 	outputs, _, _ = rnn.static_bidirectional_rnn(lstm_fw_cell, lstm_bw_cell, \
 												x, dtype = tf.float32)
@@ -85,9 +86,12 @@ with tf.Session() as sess:
 			batch_x = inputs[(step-1)*size:step*size]
 			batch_y = labels[(step-1)*size:step*size]
 			total_input += step*size
+			#batch_x = batch_x.reshape(num_steps, batch_size, input_size).transpose((1,0,2))
+			#batch_y = batch_y.reshape(num_steps, batch_size, num_classes).transpose((1,0,2))
 			batch_x = batch_x.reshape(batch_size, num_steps, input_size)
 			batch_y = batch_y.reshape(batch_size, num_steps, num_classes)
 			sess.run(optimizer, feed_dict={x:batch_x, y:batch_y})
+			#print (sess.run(biases['out']))
 			total_cor_pred += sess.run(num_cor_pred, feed_dict={x:batch_x, y:batch_y})
 			if step % display_step == 0:
 				cur_acc = sess.run(cur_accuracy, feed_dict={x:batch_x, y:batch_y})
