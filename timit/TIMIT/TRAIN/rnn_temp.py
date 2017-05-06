@@ -5,9 +5,13 @@ import pandas as pd
 
 features = np.asarray(pd.read_csv('inputs.csv'))
 output_file = np.asarray(pd.read_csv('outputs.csv'))
+features_test = np.asarray(pd.read_csv('inputs_test.csv'))
+output_file_test = np.asarray(pd.read_csv('outputs_test.csv'))
 
 inputs = features[:,2:]
 labels = output_file[:,2:-1]
+inputs_test = features_test[:,2:]
+labels_test = output_file_test[:,2:-1]
 
 num_input = inputs.shape[0]
 input_size = inputs.shape[1]
@@ -16,8 +20,8 @@ num_classes = labels.shape[1]
 #print input_size
 
 #num_layers = 2
-num_epoch = 100
-num_steps = 500
+num_epoch = 50
+num_steps = 100
 num_hidden = 512
 batch_size = 25
 learning_rate = 0.001
@@ -75,7 +79,6 @@ init = tf.global_variables_initializer()
 with tf.Session() as sess:
     sess.run(init)
     size = batch_size*num_steps
-    
     for i in range(num_epoch):
         step = 1
         print 'Epoch ' + str(i)
@@ -85,7 +88,7 @@ with tf.Session() as sess:
             #print step
             batch_x = inputs[(step-1)*size:step*size]
             batch_y = labels[(step-1)*size:step*size]
-            total_input += step*size
+            total_input += size    
             batch_x = batch_x.reshape(batch_size, num_steps, input_size)
             batch_y = batch_y.reshape(batch_size, num_steps, num_classes)
             sess.run(optimizer, feed_dict={x:batch_x, y:batch_y})
@@ -99,6 +102,10 @@ with tf.Session() as sess:
                     '{:.5f}'.format(cur_acc)  
                 '''
             step += 1
-        print 'Total Accuracy in this epoch' + '{:.5f}'.format(total_cor_pred/total_input) 
+        print 'Total Accuracy in this epoch' + '{:.5f}'.format(total_cor_pred/total_input)
+    #predict = 0
+    #test_input = inputs_test.reshape(batch_size, num_steps, input_size)
+    #test_labels = labels_test.reshape(batch_size, num_steps, input_size)
+    #predict += sess.run(num_cor_pred, feed_dict = {x:test_input, y:test_labels})
 print 'Done'
 

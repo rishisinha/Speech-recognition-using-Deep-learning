@@ -20,6 +20,12 @@ num_hidden = 50
 input_temp = np.asarray(inputs.ix[:,2:])
 input_temp = input_temp[np.newaxis,:]
 train_seq_len = np.array([input_temp.shape[1]])
+out_temp = np.asarray(outputs.ix[:,2:-1])
+
+labels = np.zeros((out_temp.shape[0],1))
+
+for i in range(labels.shape[0]):
+    labels[i,0] = np.argmax(out_temp[i,:])
 
 graph = tf.Graph()
 
@@ -27,9 +33,9 @@ with graph.as_default():
 
     ip = tf.placeholder(tf.float32, shape = [None, None, num_feats])
 
-    op = tf.sparse_placeholder(tf.int32, shape = [None, num_classes]) 
+    op = tf.sparse_placeholder(tf.int32,[None])
 
-    seq_len = tf.placeholder(tf.int32, shape =[None])
+    seq_len = tf.placeholder(tf.int32, [None])
 
     lstm = tf.contrib.rnn.BasicLSTMCell(lstm_size)
     stacked_lstm = tf.contrib.rnn.MultiRNNCell([lstm] * number_of_layers, state_is_tuple=True)
@@ -64,7 +70,7 @@ with tf.Session(graph=graph) as session:
     for epoch in range(epochs):
         train_cost = 0
         train_ler = 0
-        feed = {ip: input_temp, op: outputs.ix[:,2:-1], seq_len: train_seq_len}
+        feed = {ip: input_temp, op: labels, seq_len: train_seq_len}
         batch_cost, _ = session.run([cost, optimizer], feed)
         train_cost += batch_cost*batch_size
         train_ler += session.run(ler, feed_dict=feed)*batch_size
