@@ -22,7 +22,9 @@ win_size = 256  #512
 hop_size = 128  #256
 
 mfcc_map = {}
-for filename in wav_files[:70]:
+phn_map = {}
+
+for filename in wav_files[:200]:
     x,y = librosa.load(filename, sr=16000)
     # print(len(x))
     # mfcc = librosa.feature.mfcc(y=x, sr=16000, n_mfcc=13, n_fft=win_size, hop_length = hop_size)
@@ -31,10 +33,10 @@ for filename in wav_files[:70]:
     blah = filename.split('/' )
     mfcc_map[blah[-3] + blah[-2] + blah[-1][0:-4]] = mfcc
 
-phn_map = {}
 
-for filename in phn_files[:70]:
-    with open(filename, 'r') as f:
+#for filename in phn_files[:1]:
+    filename_ = blah[-3] + '/' + blah[-2] + '/' + blah[-1][0:-4] + '.PHN'
+    with open(filename_, 'r') as f:
         fcon = f.read()
         lines = fcon.split('\n')
         col = []
@@ -46,7 +48,6 @@ for filename in phn_files[:70]:
 df_phn = pd.DataFrame(columns = ('File', 'Phoneme'))
 # x = []
 q = 0
-
 
 for key, val in phn_map.iteritems():
     if key == 'DR1FDAW0SI1271':
@@ -83,13 +84,12 @@ for key, val in mfcc_map.iteritems():
 print len(df_mfcc)
 print len(df_phn)
 
-# for key, val in phn_map.iteritems():
-#     print key
-#     print df_mfcc[df_mfcc.File == key].count()
-#     print df_phn[df_phn.File == key].count()
-
-
-
+#for key, val in phn_map.iteritems():
+#    print key
+#    b = df_mfcc[df_mfcc.File == key].count() 
+#    c = df_phn[df_phn.File == key].count()
+#    print b
+#    print c
 
 a = df_mfcc.loc[(df_mfcc['File'] != df_phn['File'])].index
 print len(a)

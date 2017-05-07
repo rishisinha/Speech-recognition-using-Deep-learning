@@ -31,7 +31,7 @@ for idx, label in enumerate(phn_all):
 
 
 df_targets = pd.DataFrame(labels_one_hot)
-# df_targets.to_csv('phn_target.csv')
+df_targets.to_csv('phn_target.csv')
 # print len(labels_one_hot)
 # print len(phn_data)
 # print labels_one_hot[215:220][:]

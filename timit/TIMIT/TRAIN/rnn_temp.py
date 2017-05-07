@@ -8,10 +8,15 @@ output_file = np.asarray(pd.read_csv('outputs.csv'))
 features_test = np.asarray(pd.read_csv('inputs_test.csv'))
 output_file_test = np.asarray(pd.read_csv('outputs_test.csv'))
 
+print features.shape
+print output_file.shape
+print features_test.shape
+print output_file_test.shape
+
 inputs = features[:,2:]
 labels = output_file[:,2:-1]
-inputs_test = features_test[:,2:]
-labels_test = output_file_test[:,2:-1]
+inputs_test = features_test[:500,2:]
+labels_test = output_file_test[:500,2:-1]
 
 num_input = inputs.shape[0]
 input_size = inputs.shape[1]
@@ -21,14 +26,15 @@ num_classes = labels.shape[1]
 
 #num_layers = 2
 num_epoch = 50
-num_steps = 100
-num_hidden = 512
+num_steps = 50
+num_hidden = 1024
 batch_size = 25
 learning_rate = 0.001
 display_step = 5
+num_test = inputs_test.shape[0]
 
-x = tf.placeholder("float", [batch_size, num_steps, input_size])
-y = tf.placeholder("float", [batch_size, num_steps, num_classes])
+x = tf.placeholder("float", [None, num_steps, input_size])
+y = tf.placeholder("float", [None, num_steps, num_classes])
 
 weights = {
     'out' : tf.Variable(tf.random_normal([2*num_hidden, num_classes]))
@@ -103,9 +109,27 @@ with tf.Session() as sess:
                 '''
             step += 1
         print 'Total Accuracy in this epoch' + '{:.5f}'.format(total_cor_pred/total_input)
-    #predict = 0
-    #test_input = inputs_test.reshape(batch_size, num_steps, input_size)
-    #test_labels = labels_test.reshape(batch_size, num_steps, input_size)
-    #predict += sess.run(num_cor_pred, feed_dict = {x:test_input, y:test_labels})
+    #test_input = inputs_test[(step-1)*size:step*size]
+    #test_labels = labels_test[(step-1)*size:step*size]
+    #test_input = test_input.reshape(batch_size, num_steps, input_size)
+    #test_labels = labels_test.reshape(batch_size, num_steps, num_classes)
+    #predict = sess.run(cur_accuracy, feed_dict = {x:test_input, y:test_labels})
+    #print predict
+
+    test_size = num_steps*1
+    total_test = 0
+    total_cor_pred_test = 0
+    test_step = 1
+    while test_step*test_size < num_test:
+        test_x = inputs_test[(test_step-1)*test_size:test_step*test_size]
+        test_y = labels_test[(test_step-1)*test_size:test_step*test_size]
+        total_test += test_size
+        test_x = test_x.reshape(-1, num_steps, input_size)
+        test_y = test_y.reshape(-1, num_steps, num_classes)
+        total_cor_pred_test += sess.run(num_cor_pred, feed_dict={x:test_x, y:test_y})
+        print 'Test Accuracy after step' + str(test_step) + ' is ' + \
+                '{:.5f}'.format(total_cor_pred_test/total_test)
+        test_step += 1
+    print 'Testing Done'
 print 'Done'
 
