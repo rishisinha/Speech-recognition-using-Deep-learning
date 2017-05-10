@@ -24,7 +24,7 @@ hop_size = 128  #256
 mfcc_map = {}
 phn_map = {}
 
-for filename in wav_files[:200]:
+for filename in wav_files[:250]:
     x,y = librosa.load(filename, sr=16000)
     # print(len(x))
     # mfcc = librosa.feature.mfcc(y=x, sr=16000, n_mfcc=13, n_fft=win_size, hop_length = hop_size)
