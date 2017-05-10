@@ -26,8 +26,13 @@ This is the file used for training the network, and testing on the test dataset.
 ## Dependencies
 
 Python
+
 Numpy
+
 Pandas
+
 Python Speech Features
+
 Tensorflow
+
 Librosa
